@@ -8,50 +8,58 @@
 import SwiftUI
 
 struct ContentView: View {
-    var myArray = [0,1,2,3,4,5,6,7,8].shuffled()
-    @State var cardCount: Int = 4
+    @State var currentEmojis: Array<String> = []
+    
+    
     let halloweenEmojis: Array<String> = ["🎃", "👻", "🕷️", "💀","🪦", "☠️", "⚰️", "🕸️"]
+    let ballsEmojis: Array<String> = ["🥎", "🎱", "🎾", "🏀", "🏉", "🏈"]
+    
+    let vehiclesEmojis: Array<String> = ["⛴️", "🛥️", "🚀", "🚁", "🚂", "🚃", "🛩️", "🚄", "🚗", "🚚", "🚜"]
+    
+    let flagsEmojis: Array<String> = ["🇿🇦", "🇻🇦", "🇳🇦", "🇧🇦", "🇧🇷"]
+    
+    
     
     var body: some View {
+        
         VStack {
+            Text("Memorize!").font(.largeTitle)
             ScrollView {cards}
+            themeChoosingButtons
             Spacer()
-            cardCountAdjusters
 
         }
         
     }
     
-    var cardCountAdjusters: some View {
-        HStack {
-            cardAdder
-            Spacer()
-            cardRemover
-        }.padding()
-         .font(.largeTitle)
-         .imageScale(.large)
+    var themeChoosingButtons: some View {
+        HStack(spacing: 30.0) {
+            Button(action: {currentEmojis = ballsEmojis}, label: {VStack{Image(systemName: "basketball.fill")
+                Text("Balls")}})
+            Button(action: {currentEmojis = flagsEmojis}, label: {VStack{Image(systemName: "flag.2.crossed.circle.fill")
+                Text("Flags")}})
+            Button(action: {currentEmojis = vehiclesEmojis}, label: {VStack{Image(systemName: "car.fill")
+                Text("Vehicles")}})
+            Button(action: {currentEmojis = halloweenEmojis}, label: {VStack{Image(systemName: "moonphase.new.moon")
+                Text("Halloween")}})
+        }
+        .font(/*@START_MENU_TOKEN@*/.footnote/*@END_MENU_TOKEN@*/)
+        
+        
+        
     }
     
-    func cardCountAdjuster(by offset: Int, symbol: String) -> some View {
-        Button(action: {cardCount += offset}, label: {Image(systemName: symbol)})
-            .disabled(cardCount + offset < 1 || cardCount + offset > halloweenEmojis.count)
-    }
-    
-    var cardAdder: some View {
-        cardCountAdjuster(by: 1, symbol: "rectangle.stack.fill.badge.plus")
-    }
-    
-    var cardRemover: some View {
-        cardCountAdjuster(by: -1, symbol: "rectangle.stack.fill.badge.minus")
-    }
+
     
     var cards: some View {
-        LazyVGrid(columns:[GridItem(.adaptive(minimum: 120))]) {
-            ForEach(0..<cardCount, id:\.self) { index in
-            StringCardView(isFaceUp: true, emoji: halloweenEmojis[index])
+        let emojisWithPairsShuffled: Array<String> = (currentEmojis + currentEmojis).shuffled()
+        return(
+        LazyVGrid(columns:[GridItem(.adaptive(minimum: 60))]) {
+            ForEach(0..<emojisWithPairsShuffled.count, id:\.self) { index in
+            StringCardView(isFaceUp: false, emoji: emojisWithPairsShuffled[index])
                     .aspectRatio(2/3 ,contentMode: .fit)
             }
-        }.foregroundColor(.purple).padding()
+        }.foregroundColor(.purple).padding())
     }
     
 }
@@ -59,7 +67,7 @@ struct ContentView: View {
  
 struct StringCardView: View {
     @State var isFaceUp: Bool
-    @State var emoji: String
+    var emoji: String
     var body: some View {
         ZStack() {
             let base = RoundedRectangle(cornerRadius: 12)
@@ -77,29 +85,7 @@ struct StringCardView: View {
 }
 
 
-struct IntCardView: View {
-    @State var isFaceUp: Bool = true
-    @State var arrayNumber: Int
-    
-    var body: some View {
-        ZStack() {
-            let base: RoundedRectangle = RoundedRectangle(cornerRadius: 12)
-            if isFaceUp {
-                base.foregroundColor(.white)
-                base.strokeBorder(lineWidth: 2)
-                Text("\(arrayNumber)").font(.largeTitle)
-                
-            } else {
-                base
-                
-            }
-        }
-        .onTapGesture {
-            arrayNumber += 2
-            isFaceUp.toggle()
-        }
-    }
-}
+
 
 
 
