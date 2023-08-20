@@ -8,43 +8,98 @@
 import SwiftUI
 
 struct ContentView: View {
-    var myArray = [0,1,2,3,4].shuffled()
+    var myArray = [0,1,2,3,4,5,6,7,8].shuffled()
+    @State var cardCount: Int = 4
+    let halloweenEmojis: Array<String> = ["🎃", "👻", "🕷️", "💀","🪦", "☠️", "⚰️", "🕸️"]
+    
     var body: some View {
+        VStack {
+            ScrollView {cards}
+            Spacer()
+            cardCountAdjusters
+
+        }
+        
+    }
+    
+    var cardCountAdjusters: some View {
         HStack {
-            ForEach(0..<myArray.count, id:\.self) { index in
-                CardView(arrayNumber: myArray[index])
+            cardAdder
+            Spacer()
+            cardRemover
+        }.padding()
+         .font(.largeTitle)
+         .imageScale(.large)
+    }
+    
+    func cardCountAdjuster(by offset: Int, symbol: String) -> some View {
+        Button(action: {cardCount += offset}, label: {Image(systemName: symbol)})
+            .disabled(cardCount + offset < 1 || cardCount + offset > halloweenEmojis.count)
+    }
+    
+    var cardAdder: some View {
+        cardCountAdjuster(by: 1, symbol: "rectangle.stack.fill.badge.plus")
+    }
+    
+    var cardRemover: some View {
+        cardCountAdjuster(by: -1, symbol: "rectangle.stack.fill.badge.minus")
+    }
+    
+    var cards: some View {
+        LazyVGrid(columns:[GridItem(.adaptive(minimum: 120))]) {
+            ForEach(0..<cardCount, id:\.self) { index in
+            StringCardView(isFaceUp: true, emoji: halloweenEmojis[index])
+                    .aspectRatio(2/3 ,contentMode: .fit)
             }
-        }.foregroundColor(.purple)
-            .padding()
-        
-        
+        }.foregroundColor(.purple).padding()
+    }
+    
+}
+
+ 
+struct StringCardView: View {
+    @State var isFaceUp: Bool
+    @State var emoji: String
+    var body: some View {
+        ZStack() {
+            let base = RoundedRectangle(cornerRadius: 12)
+            Group{
+                base.foregroundColor(.white)
+                base.strokeBorder(lineWidth: 2)
+                Text("\(emoji)").font(.largeTitle)
+            }
+            base.fill().opacity(isFaceUp ? 0 : 1)
+        }
+        .onTapGesture {
+            isFaceUp.toggle()
+        }
     }
 }
 
 
-
-struct CardView: View {
-    var isFaceUp: Bool = true
-    var arrayNumber: Int
+struct IntCardView: View {
+    @State var isFaceUp: Bool = true
+    @State var arrayNumber: Int
     
     var body: some View {
-        ZStack(content: {
+        ZStack() {
+            let base: RoundedRectangle = RoundedRectangle(cornerRadius: 12)
             if isFaceUp {
-                RoundedRectangle(cornerRadius:12).foregroundColor(.white)
-                RoundedRectangle(cornerRadius:12).strokeBorder(lineWidth: 2)
+                base.foregroundColor(.white)
+                base.strokeBorder(lineWidth: 2)
                 Text("\(arrayNumber)").font(.largeTitle)
                 
             } else {
-                RoundedRectangle(cornerRadius: 12)
+                base
+                
             }
-        })
+        }
+        .onTapGesture {
+            arrayNumber += 2
+            isFaceUp.toggle()
+        }
     }
 }
-
-
-
-
-
 
 
 
