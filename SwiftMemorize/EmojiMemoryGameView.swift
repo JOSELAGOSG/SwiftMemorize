@@ -13,16 +13,22 @@ struct EmojiMemoryGameView: View {
     
     var body: some View {
         VStack{
+            HStack {
+                Button("New Game"){
+                viewModel.newGame()
+                }
+                Text("Theme \(viewModel.theme.name)") 
+                Text("Score: \(viewModel.score)")
+            } .padding()
             ScrollView {
                 cards
                     .animation(.default, value: viewModel.cards)
             }
-            Button("Shuffle") {
-                viewModel.shuffle()
-            }
+            
         }
         
     }
+    
     
     
     var cards: some View {
@@ -36,7 +42,7 @@ struct EmojiMemoryGameView: View {
                         viewModel.choose(card)
                     }
             }
-        }.foregroundColor(.purple).padding()
+        }.foregroundColor(viewModel.cardsColor).padding()
     }
     
 }
@@ -68,29 +74,7 @@ struct CardView: View {
 }
 
 
-struct IntCardView: View {
-    @State var isFaceUp: Bool = true
-    @State var arrayNumber: Int
-    
-    var body: some View {
-        ZStack() {
-            let base: RoundedRectangle = RoundedRectangle(cornerRadius: 12)
-            if isFaceUp {
-                base.foregroundColor(.white)
-                base.strokeBorder(lineWidth: 2)
-                Text("\(arrayNumber)").font(.largeTitle)
-                
-            } else {
-                base
-                
-            }
-        }
-        .onTapGesture {
-            arrayNumber += 2
-            isFaceUp.toggle()
-        }
-    }
-}
+
 
 
 
